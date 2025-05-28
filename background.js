@@ -21,22 +21,32 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendResponse({ blockInfo: data.blockInfo });
     });
     return true;
+  } else if (msg.type === 'SHOW_WATER_NOTIFICATION') {
+    chrome.notifications.create('water-reminder', {
+      type: 'basic',
+      iconUrl: 'icon-128.png',
+      title: 'Hydration Reminder',
+      message: 'Time to drink some water!'
+    });
+  } else if (msg.type === 'SET_WATER_ALARM') {
+    try {
+      chrome.alarms.create('water-reminder', { delayInMinutes: 60 });
+      sendResponse({ success: true });
+    } catch (error) {
+      console.error('Error setting water alarm:', error);
+      sendResponse({ success: false, error: error.message });
+    }
   }
 });
 
-chrome.storage.local.get('blockInfo', (data) => {
-  const blockInfo = data.blockInfo;
-  if (blockInfo && Array.isArray(blockInfo.blockedSites)) {
-    const now = Date.now();
-    if (blockInfo.unlockTime && now > blockInfo.unlockTime) {
-      // Block expired, clear it
-      chrome.storage.local.set({ blockInfo: null });
-      return;
-    }
-    const current = window.location.hostname;
-    const blocked = blockInfo.blockedSites.some(site => current.includes(site));
-    if (blocked) {
-      window.location.href = chrome.runtime.getURL('block.html');
-    }
+// Handle alarms
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'water-reminder') {
+    chrome.notifications.create('water-reminder', {
+      type: 'basic',
+      iconUrl: 'icon-128.png',
+      title: 'Hydration Reminder',
+      message: 'Time to drink some water!'
+    });
   }
 }); 
