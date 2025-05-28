@@ -85,8 +85,7 @@ function checkWaterReminder() {
 }
 
 waterBtn.onclick = () => {
-  const nextReminder = Date.now() + 60 * 60 * 1000;
-  chrome.storage.local.set({ waterReminder: nextReminder }, () => {
+  chrome.runtime.sendMessage({ type: 'SET_WATER_ALARM' }, () => {
     statusDiv.textContent = 'You will be reminded to drink water in 1 hour.';
   });
 };

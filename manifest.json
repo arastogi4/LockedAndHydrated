@@ -3,7 +3,7 @@
   "name": "Site Locker & Water Reminder",
   "version": "1.0",
   "description": "Lock yourself to a site for a set duration and get water reminders!",
-  "permissions": ["tabs", "storage", "notifications", "scripting"],
+  "permissions": ["tabs", "storage", "notifications", "scripting", "alarms"],
   "background": {
     "service_worker": "background.js"
   },
